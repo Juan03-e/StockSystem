@@ -1,0 +1,53 @@
+﻿
+> stockapp@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 5.5s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/23) ...
+  Generating static pages using 11 workers (5/23) 
+  Generating static pages using 11 workers (11/23) 
+  Generating static pages using 11 workers (17/23) 
+Ô£ô Generating static pages using 11 workers (23/23) in 324.6ms
+  Finalizing page optimization ...
+
+Route (app)
+Ôöî ãÆ /
+Ôö£ Ôùï /_not-found
+Ôö£ ãÆ /alerts
+Ôö£ ãÆ /api/alerts
+Ôö£ ãÆ /api/alerts/count
+Ôö£ ãÆ /api/auth/[...nextauth]
+Ôö£ ãÆ /api/categories
+Ôö£ ãÆ /api/categories/[id]
+Ôö£ ãÆ /api/dashboard
+Ôö£ ãÆ /api/movements
+Ôö£ ãÆ /api/movements/[id]/void
+Ôö£ ãÆ /api/products
+Ôö£ ãÆ /api/products/[id]
+Ôö£ ãÆ /api/products/import
+Ôö£ ãÆ /api/reports/low-stock
+Ôö£ ãÆ /api/reports/movements
+Ôö£ ãÆ /api/reports/stock
+Ôö£ ãÆ /api/users
+Ôö£ ãÆ /api/users/[id]
+Ôö£ ãÆ /api/users/[id]/activity
+Ôö£ ãÆ /dashboard
+Ôö£ Ôùï /login
+Ôö£ ãÆ /movements
+Ôö£ ãÆ /products
+Ôö£ ãÆ /products/categories
+Ôö£ ãÆ /reports
+Ôöö ãÆ /users
+
+
+ãÆ Proxy (Middleware)
+
+Ôùï  (Static)   prerendered as static content
+ãÆ  (Dynamic)  server-rendered on demand
+
