@@ -1,5 +1,5 @@
 // StockSystem — Prisma Schema
-// SQLite (dev) → portable, easy to migrate to PostgreSQL
+// MySQL (production — cPanel compatible)
 // Run: npx prisma db push && npx prisma db seed
 
 generator client {
@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 

@@ -32,6 +32,9 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Standalone output for cPanel / Node.js server deployment
+  output: "standalone",
+
   // Apply security headers to all routes
   async headers() {
     return [
