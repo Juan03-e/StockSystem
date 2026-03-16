@@ -1,0 +1,96 @@
+// StockSystem — Prisma Schema (DEVELOPMENT)
+// SQLite — local dev only
+// Run: npx prisma db push --schema prisma/schema.dev.prisma
+//      npx prisma db seed
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// MODELS
+// ─────────────────────────────────────────
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      String    @default("EMPLOYEE")
+  isActive  Boolean   @default(true)
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  movements       Movement[]
+  voidedMovements Movement[] @relation("VoidedBy")
+  auditLogs       AuditLog[]
+}
+
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  sku         String   @unique
+  description String?
+  categoryId  String
+  salePrice   Float
+  costPrice   Float
+  stock       Int      @default(0)
+  minStock    Int      @default(5)
+  supplier    String?
+  unit        String   @default("unit")
+  imageUrl    String?
+  isArchived  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category  Category   @relation(fields: [categoryId], references: [id])
+  movements Movement[]
+}
+
+model Movement {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  type      String
+  reason    String
+  quantity  Int
+  notes     String?
+  date      DateTime @default(now())
+
+  isVoided   Boolean   @default(false)
+  voidReason String?
+  voidedById String?
+  voidedAt   DateTime?
+
+  product  Product @relation(fields: [productId], references: [id])
+  user     User    @relation(fields: [userId], references: [id])
+  voidedBy User?   @relation("VoidedBy", fields: [voidedById], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  details   String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
