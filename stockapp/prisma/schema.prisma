@@ -1,0 +1,107 @@
+// StockSystem — Prisma Schema
+// SQLite (dev) → portable, easy to migrate to PostgreSQL
+// Run: npx prisma db push && npx prisma db seed
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────
+
+// SQLite doesn't support native enums — we use String with Zod validation
+
+// Role: ADMIN | MANAGER | EMPLOYEE
+// MovementType: ENTRY | EXIT
+// MovementReason: PURCHASE | RETURN | SALE | LOSS | ADJUSTMENT
+// AlertLevel: CRITICAL | WARNING | OK
+
+// ─────────────────────────────────────────
+// MODELS
+// ─────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String   // bcrypt hash
+  role      String   @default("EMPLOYEE") // ADMIN | MANAGER | EMPLOYEE
+  isActive  Boolean  @default(true)
+  lastLogin DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  movements Movement[]
+  voidedMovements Movement[] @relation("VoidedBy")
+  auditLogs AuditLog[]
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  name        String
+  sku         String    @unique
+  description String?
+  categoryId  String
+  salePrice   Float
+  costPrice   Float
+  stock       Int       @default(0)
+  minStock    Int       @default(5)  // alert threshold
+  supplier    String?
+  unit        String    @default("unit") // unit | kg | L | box | etc.
+  imageUrl    String?
+  isArchived  Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  category    Category  @relation(fields: [categoryId], references: [id])
+  movements   Movement[]
+}
+
+model Movement {
+  id          String    @id @default(cuid())
+  productId   String
+  userId      String
+  type        String    // ENTRY | EXIT
+  reason      String    // PURCHASE | RETURN | SALE | LOSS | ADJUSTMENT
+  quantity    Int
+  notes       String?
+  date        DateTime  @default(now())
+
+  // Audit trail — movements cannot be deleted, only voided by Admin
+  isVoided    Boolean   @default(false)
+  voidReason  String?
+  voidedById  String?
+  voidedAt    DateTime?
+
+  product     Product   @relation(fields: [productId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  voidedBy    User?     @relation("VoidedBy", fields: [voidedById], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String   // e.g. "CREATE_PRODUCT", "VOID_MOVEMENT", "DELETE_USER"
+  entity    String   // e.g. "Product", "Movement", "User"
+  entityId  String?
+  details   String?  // JSON string with before/after state
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
